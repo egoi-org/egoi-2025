@@ -1,0 +1,90 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+// fixed number of digits: 10
+string int_to_bits(int n) {
+    string s;
+    for( int i=0;i<10;++i){
+        if(n%2) s.push_back('1');
+        else s.push_back('0');
+        n /= 2;
+    }
+    return s;
+}
+
+int bits_to_int(string s,int i){
+    int res = 0;
+    for(int j=9;j>=0;--j){
+        res *=2;
+        if(s[10*i+j] == '1') res++;
+    }
+    return res;
+}
+
+signed main() {
+    int n,p;
+    cin >> p >> n;
+
+    if (p==1) {
+        vector<set<int>> adj(n);
+        vector<int> deg(n,0);
+        for(int i=0;i<n-1;++i){
+            int u,v;
+            cin >> u >> v;
+            adj[u].insert(v);
+            adj[v].insert(u);
+            deg[u]++;
+            deg[v]++;
+        }
+        int numv = n;
+        vector<int> counts;
+        vector<int> rem;
+        int mode = 1;
+
+        while(numv>1) {
+            int count = 0;
+            for (int i=0;i<n;++i){
+                if(deg[i]==1 && mode*i < mode*(*adj[i].begin())) {
+                    int u = *adj[i].begin();
+                    count++;
+                    rem.push_back(i);
+                    deg[i]--;
+                    deg[u]--;
+                    adj[u].erase(i);
+                }
+            }
+            counts.push_back(count);
+            numv -= count;
+            mode *= -1;
+        }
+        for(int c:counts){
+            cout << int_to_bits(c);
+        }
+        cout << '\n';
+        assert(rem.size()==n-1);
+        for(int l:rem){
+            cout << l << '\n';
+        }
+
+    } else if (p==2) {
+        string k;
+        cin >> k;
+        
+        assert(k.size()%10 ==0);
+        int mode = 1;
+        for(int i=0;i<k.size()/10;++i){
+            int c = bits_to_int(k,i);
+            for(int j=0;j<c;++j){
+                int u,v;
+                cin >> u >> v;
+                if(mode*u < mode*v) cout << u << endl;
+                else cout << v << endl;
+            }
+            mode *= -1;
+        }
+
+    }
+
+
+}
